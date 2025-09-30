@@ -1,0 +1,485 @@
+# 🚀 Institutional Investment Analysis Platform
+
+A production-ready hedge fund-grade investment analysis platform with real-time data integration, OCR capabilities, NLP sentiment analysis, and AI-powered insights.
+
+---
+
+## 📁 File Structure
+
+```
+investment-platform/
+├── backend_server.py          # Main Python backend (already created above)
+├── requirements.txt           # Python dependencies (already created above)
+├── .env                       # Environment variables (use .env.template)
+├── .env.template              # Template for environment setup
+├── frontend/                  # React frontend (the artifact you see)
+│   └── src/
+│       └── App.jsx           # Main React component
+├── data/                     # Data storage
+│   ├── uploads/              # Uploaded documents
+│   └── processed/            # Processed results
+└── README.md                 # This file
+```
+
+---
+
+## 🎯 Quick Start (3 Steps)
+
+### Step 1: Backend Setup (5 minutes)
+
+```bash
+# Clone or create project directory
+mkdir investment-platform
+cd investment-platform
+
+# Copy backend_server.py from the artifact above
+
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create .env file from template
+cp .env.template .env
+# Edit .env with your API keys (see below)
+
+# Start the backend
+python backend_server.py
+```
+
+Backend will run at: `http://localhost:8000`
+
+### Step 2: Get API Keys (10 minutes)
+
+**Required (Free Tier Available):**
+
+1. **Alpha Vantage** (Stock data)
+   - Visit: https://www.alphavantage.co/support/#api-key
+   - Get free key instantly
+   - Add to `.env`: `ALPHA_VANTAGE_API_KEY=your_key`
+
+2. **Finnhub** (Market data & news)
+   - Visit: https://finnhub.io/register
+   - Free: 60 API calls/minute
+   - Add to `.env`: `FINNHUB_API_KEY=your_key`
+
+3. **Perplexity AI** (Intelligent analysis)
+   - Visit: https://www.perplexity.ai/settings/api
+   - $5 free credits for testing
+   - Add to `.env`: `PERPLEXITY_API_KEY=your_key`
+
+**Optional (For full features):**
+
+4. **Reddit API** (WSB sentiment)
+   - Visit: https://www.reddit.com/prefs/apps
+   - Create "script" app
+   - Add client ID and secret to `.env`
+
+### Step 3: Frontend Setup
+
+The frontend is the React artifact you see above. It runs directly in Claude's interface!
+
+**To run locally:**
+```bash
+# In a new terminal
+npx create-react-app frontend
+cd frontend
+# Copy the React component code into src/App.jsx
+npm start
+```
+
+---
+
+## 📦 Installation Details
+
+### Prerequisites
+
+**Required:**
+- Python 3.9 or higher
+- pip (Python package manager)
+
+**Optional (for full features):**
+- PostgreSQL 12+ (or use SQLite in development)
+- Redis 6+ (for caching)
+- Tesseract OCR (for screenshot analysis)
+
+### Installing Tesseract OCR
+
+**macOS:**
+```bash
+brew install tesseract
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install tesseract-ocr
+```
+
+**Windows:**
+1. Download from: https://github.com/UB-Mannheim/tesseract/wiki
+2. Add to PATH
+
+### Database Setup
+
+**Option 1: SQLite (Easiest - No setup needed)**
+```bash
+# In .env file:
+DATABASE_URL=sqlite:///./investment.db
+```
+
+**Option 2: PostgreSQL (Recommended for production)**
+```bash
+# Install PostgreSQL
+brew install postgresql  # macOS
+sudo apt-get install postgresql  # Ubuntu
+
+# Create database
+createdb investment_db
+
+# In .env file:
+DATABASE_URL=postgresql://localhost/investment_db
+```
+
+**Redis (Optional - for caching)**
+```bash
+# Install Redis
+brew install redis  # macOS
+sudo apt-get install redis  # Ubuntu
+
+# Start Redis
+redis-server
+
+# In .env file:
+REDIS_URL=redis://localhost:6379
+```
+
+---
+
+## 🎮 Usage Guide
+
+### 1. Upload Financial Documents
+
+**Supported formats:**
+- **10-K / 10-Q Reports** (PDF)
+- **Earnings Call Transcripts** (PDF, TXT)
+- **Excel Files** with portfolio data (XLSX, CSV)
+- **Portfolio Screenshots** (JPG, PNG) - OCR extracts positions
+
+**Example:**
+```bash
+# Using the web interface
+1. Go to "Data Upload" tab
+2. Drag & drop your 10-K PDF
+3. System extracts text, tables, and financial metrics
+4. Analysis appears in Dashboard tab
+```
+
+### 2. Portfolio Analysis
+
+**Method 1: Screenshot Upload**
+```
+1. Take screenshot of your brokerage account
+2. Upload in "Data Upload" tab
+3. OCR extracts: tickers, shares, prices
+4. System calculates: Beta, Sharpe ratio, risk metrics
+```
+
+**Method 2: Manual Entry**
+```python
+# Or via API directly
+import requests
+
+positions = [
+    {"ticker": "AAPL", "shares": 100},
+    {"ticker": "MSFT", "shares": 50},
+    {"ticker": "GOOGL", "shares": 75}
+]
+
+response = requests.post(
+    "http://localhost:8000/api/portfolio/analyze",
+    json=positions
+)
+
+print(response.json())
+```
+
+### 3. AI Advisor Chat
+
+Ask natural language questions:
+- "What's my risk exposure?"
+- "Compare my strategy to Ray Dalio"
+- "Should I sell my biotech positions?"
+- "What's the FDA approval probability for my holdings?"
+
+### 4. Real-time Data
+
+```python
+# Get live stock data
+response = requests.get(
+    "http://localhost:8000/api/stock/AAPL/realtime"
+)
+
+data = response.json()
+print(f"Current price: ${data['current_price']}")
+print(f"Beta: {data['beta']}")
+```
+
+---
+
+## 🔧 API Endpoints
+
+### Document Upload
+```
+POST /api/upload/document
+Content-Type: multipart/form-data
+
+Response:
+{
+  "status": "success",
+  "data": {
+    "text": "extracted text...",
+    "tables": [...],
+    "positions": [...]
+  }
+}
+```
+
+### Portfolio Analysis
+```
+POST /api/portfolio/analyze
+Content-Type: application/json
+
+Body:
+[
+  {"ticker": "AAPL", "shares": 100},
+  {"ticker": "MSFT", "shares": 50}
+]
+
+Response:
+{
+  "metrics": {
+    "totalValue": 50000,
+    "beta": 1.23,
+    "sharpeRatio": 1.87,
+    "volatility": 18.4
+  },
+  "hedge_fund_comparison": {
+    "alignment_scores": {
+      "buffett": 45,
+      "dalio": 68,
+      "ackman": 72
+    },
+    "recommendations": [...]
+  }
+}
+```
+
+### Real-time Stock Data
+```
+GET /api/stock/{ticker}/realtime
+
+Response:
+{
+  "ticker": "AAPL",
+  "current_price": 178.45,
+  "beta": 1.29,
+  "pe_ratio": 28.5,
+  "market_cap": 2800000000000
+}
+```
+
+### AI Chat
+```
+POST /api/ai/chat
+
+Body:
+{
+  "message": "What's my risk profile?",
+  "context": {"portfolio": {...}}
+}
+
+Response:
+{
+  "analysis": "Your portfolio shows...",
+  "sources": [...],
+  "timestamp": "2025-09-29T..."
+}
+```
+
+---
+
+## 🎯 Features Breakdown
+
+### ✅ Implemented Features
+
+1. **Document Processing**
+   - ✅ PDF text extraction (10-K, 10-Q)
+   - ✅ Excel/CSV parsing
+   - ✅ OCR for screenshots
+   - ✅ Table extraction
+
+2. **Financial Data APIs**
+   - ✅ Real-time stock prices (Yahoo Finance)
+   - ✅ Company fundamentals (Alpha Vantage)
+   - ✅ Market data (Finnhub)
+   - ✅ Historical data analysis
+
+3. **Portfolio Analytics**
+   - ✅ Portfolio Beta calculation
+   - ✅ Sharpe Ratio
+   - ✅ Volatility metrics
+   - ✅ Max drawdown
+   - ✅ Position-level analysis
+
+4. **Hedge Fund Comparison**
+   - ✅ Buffett strategy alignment
+   - ✅ Ray Dalio principles
+   - ✅ Bill Ackman concentration
+   - ✅ Druckenmiller macro approach
+
+5. **AI Integration**
+   - ✅ Perplexity AI for analysis
+   - ✅ Chat interface
+   - ✅ Context-aware responses
+
+### 🚧 Advanced Features (Require Additional Setup)
+
+6. **NLP Sentiment Analysis**
+   - 🔧 Earnings call analysis (requires FinBERT model)
+   - 🔧 Reddit WSB sentiment (requires Reddit API)
+   - 🔧 Twitter sentiment (requires Twitter API)
+
+7. **Biotech Analysis**
+   - 🔧 FDA approval probability
+   - 🔧 Clinical trial phase analysis
+   - 🔧 Indication-specific modeling
+
+---
+
+## 🐛 Troubleshooting
+
+### Backend won't start
+
+**Problem:** `ModuleNotFoundError`
+```bash
+# Solution: Install missing package
+pip install <package_name>
+
+# Or reinstall all
+pip install -r requirements.txt
+```
+
+**Problem:** Port 8000 in use
+```bash
+# Solution: Change port in backend_server.py
+# Last line: uvicorn.run(app, host="0.0.0.0", port=8001)
+```
+
+### API calls failing
+
+**Problem:** "Demo mode" message
+```bash
+# Solution: Check .env file has correct API keys
+cat .env | grep API_KEY
+
+# Test API key
+curl "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=AAPL&apikey=YOUR_KEY"
+```
+
+### OCR not working
+
+**Problem:** `pytesseract.TesseractNotFoundError`
+```bash
+# Solution: Install Tesseract
+# macOS:
+brew install tesseract
+
+# Ubuntu:
+sudo apt-get install tesseract-ocr
+
+# Windows: Download from GitHub (see Installation section)
+```
+
+### Database errors
+
+**Problem:** `connection refused`
+```bash
+# Solution 1: Use SQLite instead
+# In .env:
+DATABASE_URL=sqlite:///./investment.db
+
+# Solution 2: Start PostgreSQL
+brew services start postgresql  # macOS
+sudo service postgresql start   # Ubuntu
+```
+
+---
+
+## 📊 Testing the System
+
+### Test 1: Health Check
+```bash
+curl http://localhost:8000/api/health
+# Expected: {"status": "healthy", "timestamp": "..."}
+```
+
+### Test 2: Stock Data
+```bash
+curl http://localhost:8000/api/stock/AAPL/realtime
+# Expected: {"ticker": "AAPL", "current_price": 178.45, ...}
+```
+
+### Test 3: Portfolio Analysis
+```bash
+curl -X POST http://localhost:8000/api/portfolio/analyze \
+  -H "Content-Type: application/json" \
+  -d '[{"ticker":"AAPL","shares":100},{"ticker":"MSFT","shares":50}]'
+```
+
+### Test 4: Upload Document
+```bash
+curl -X POST http://localhost:8000/api/upload/document \
+  -F "file=@your_document.pdf"
+```
+
+---
+
+## 🚀 Deployment
+
+### Docker (Recommended)
+
+Create `Dockerfile`:
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY backend_server.py .
+COPY .env .
+
+EXPOSE 8000
+
+CMD ["python", "backend_server.py"]
+```
+
+Build and run:
+```bash
+docker build -t investment-platform .
+docker run -p 8000:8000 investment-platform
+```
+
+### Cloud Deployment
+
+**Heroku:**
+```bash
+heroku create investment-platform
+git push heroku main
+```
+
+**
