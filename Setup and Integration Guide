@@ -1,0 +1,135 @@
+# Institutional Investment Analysis Platform - Complete Setup Guide
+
+## 🎯 Overview
+
+This is a **production-ready** hedge fund-grade investment analysis platform that integrates:
+- Real-time financial data from multiple APIs
+- OCR for portfolio screenshots
+- NLP sentiment analysis (earnings calls, Reddit/WSB)
+- Biotech clinical trial probability modeling
+- Perplexity AI for intelligent analysis
+- PostgreSQL + Redis for data persistence and caching
+
+---
+
+## 📋 Prerequisites
+
+### System Requirements
+- Python 3.9+
+- Node.js 16+ (for frontend)
+- PostgreSQL 12+
+- Redis 6+
+- Tesseract OCR
+
+### Hardware Recommendations
+- 8GB+ RAM (NLP models are memory-intensive)
+- 20GB+ disk space (for model downloads)
+
+---
+
+## 🚀 Installation Steps
+
+### 1. Backend Setup
+
+#### Install Python Dependencies
+```bash
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install core packages
+pip install fastapi uvicorn pydantic python-multipart
+
+# Financial data APIs
+pip install yfinance alpha-vantage finnhub-python
+
+# Document processing
+pip install PyPDF2 pdfplumber openpyxl pillow pytesseract
+
+# NLP & ML
+pip install transformers torch textblob nltk
+pip install scikit-learn scipy statsmodels numpy pandas
+
+# Reddit API
+pip install praw
+
+# SEC Edgar
+pip install sec-edgar-downloader
+
+# Database
+pip install sqlalchemy psycopg2-binary redis
+
+# Additional utilities
+pip install requests python-dotenv
+```
+
+#### Download NLP Models
+```bash
+python -c "import nltk; nltk.download('vader_lexicon')"
+```
+
+#### Install Tesseract OCR
+
+**macOS:**
+```bash
+brew install tesseract
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install tesseract-ocr
+```
+
+**Windows:**
+Download from: https://github.com/UB-Mannheim/tesseract/wiki
+
+---
+
+### 2. Database Setup
+
+#### PostgreSQL
+```bash
+# Create database
+createdb investment_db
+
+# Or using psql
+psql -c "CREATE DATABASE investment_db;"
+```
+
+#### Redis
+```bash
+# Start Redis server
+redis-server
+
+# Or as background service
+redis-server --daemonize yes
+```
+
+---
+
+### 3. API Keys Configuration
+
+Create a `.env` file in your project root:
+
+```env
+# Financial Data APIs
+ALPHA_VANTAGE_API_KEY=your_key_here
+FINNHUB_API_KEY=your_key_here
+
+# AI Services
+PERPLEXITY_API_KEY=your_key_here
+OPENAI_API_KEY=your_key_here  # Optional
+
+# Reddit API
+REDDIT_CLIENT_ID=your_client_id
+REDDIT_CLIENT_SECRET=your_client_secret
+REDDIT_USER_AGENT=investment_analyzer
+
+# Database
+DATABASE_URL=postgresql://localhost/investment_db
+REDIS_URL=redis://localhost:6379
+```
+
+#### How to Get API Keys:
+
+**Alpha
