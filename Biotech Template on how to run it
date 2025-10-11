@@ -1,0 +1,9 @@
+Install yfinance: If you don't have it, run: pip install yfinance
+
+Define Your Target: Change TICKER_TO_ANALYZE to the stock you are researching.
+
+Do Your Research (Crucial Step): The most important manual input is the HISTORICAL_EVENTS list. You must research the company's history (press releases, news articles) to find dates of significant past announcements and assign a reasonable weight to them.
+
+Get the Straddle Price: Look up the current price of an at-the-money (ATM) straddle in your brokerage account for an expiration date that is after the upcoming catalyst date. Update the CURRENT_ATM_STRADDLE_PRICE variable.
+
+Run the Script: Execute the script and analyze the output, which will directly compare the breakeven requirement to the weighted historical data.
